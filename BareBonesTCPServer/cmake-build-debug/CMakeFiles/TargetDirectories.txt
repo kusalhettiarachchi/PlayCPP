@@ -1,0 +1,3 @@
+/home/hkusal/CLionProjects/BareBonesTCPServer/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/hkusal/CLionProjects/BareBonesTCPServer/cmake-build-debug/CMakeFiles/BareBonesTCPServer.dir
+/home/hkusal/CLionProjects/BareBonesTCPServer/cmake-build-debug/CMakeFiles/edit_cache.dir
