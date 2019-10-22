@@ -3,4 +3,4 @@ project(BareBonesTCPServer)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(BareBonesTCPServer main.cpp)
+add_executable(BareBonesTCPServer server.cpp)
