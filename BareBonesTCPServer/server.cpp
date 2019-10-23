@@ -6,7 +6,14 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <vector>
+
 using namespace std;
+
+const int PORT = 54000;
+const char* bindIP = "192.168.17.32";
+
+void SendMessage(string msg, int clientSocket);
 
 int main() {
     //Create a socket
@@ -19,8 +26,8 @@ int main() {
     //Bind the socket to ip and port
     sockaddr_in hint;
     hint.sin_family = AF_INET;
-    hint.sin_port = htons(54000);
-    inet_pton(AF_INET, "192.168.17.32", &hint.sin_addr); // 127.0.0.1
+    hint.sin_port = htons(PORT);
+    inet_pton(AF_INET, bindIP, &hint.sin_addr);
 
     if (bind(listeninigSocket, (sockaddr*)&hint, sizeof(hint)) == -1) {
         cerr << "Can't bind to IP/port";
@@ -29,10 +36,12 @@ int main() {
 
     //Mark the socket for listening
     listen(listeninigSocket, SOMAXCONN);
+    cout << "Listening on port: " << PORT << endl;
 
     //Accept the client request
     sockaddr_in client;
     socklen_t clientSize = sizeof(client);
+
     char host[NI_MAXHOST];
     char svc[NI_MAXSERV];
 
@@ -48,11 +57,20 @@ int main() {
     memset(host, 0, NI_MAXHOST);
     memset(svc, 0, NI_MAXSERV);
 
-    int result = getnameinfo((sockaddr*)&client, sizeof(client), host, NI_MAXHOST, svc, NI_MAXSERV, 0);
+//    int result = getnameinfo((sockaddr*)&client, sizeof(client), host, NI_MAXHOST, svc, NI_MAXSERV, 0);
 
-//    if(result) {
-//        cout << host << " connected on " << service << endl;
-//    }
+    if (getnameinfo((sockaddr*)&client, sizeof(client), host, NI_MAXHOST, svc, NI_MAXSERV, 0) == 0)
+    {
+        cout << host << " connected on port " << svc << endl;
+    }
+    else
+    {
+        inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
+        cout << host << " connected on port " << ntohs(client.sin_port) << endl;
+    }
+
+    //Send greeting
+    SendMessage("Hello! Welcome.", clientSocket);
 
     //While listening echo the message
     char buf[4096];
@@ -70,12 +88,40 @@ int main() {
             cout << "Client disconnected" << endl;
             break;
         }
+        string message = string(buf, 0, bytesRecv);
 
-        cout << "Received: " << string(buf, 0, bytesRecv) << endl;
+        if(message == "exit\r\n") {
+            SendMessage("GoodBye!", clientSocket);
+//            close(clientSocket);
+//            close(listeninigSocket);
+//            main();
+            break;
+        }
+        else if (message == "shutdown\r\n") {
+            cout << "Shut down message received" << endl;
+            break;
+        }
+        else {
+            cout << "Received: " << buf << endl;
+            cout << "> ";
 
-        send(clientSocket, buf, bytesRecv + 1, 0);
+            //Send reply
+            string reply;
+            getline(cin, reply);
+            SendMessage(reply, clientSocket);
+        }
+//        SendMessage("You said: " + buf, clientSocket);
     }
-     //Close the socket
-     close(clientSocket);
+     //Close the sockets
+    close(clientSocket);
+    close(listeninigSocket);
+    cout << "Sockets closed. Bye!" << endl;
     return 0;
+}
+
+void SendMessage(string msg, int clientSocket) {
+    string replyMessage = msg + "\r\n> ";
+    unsigned char reply[replyMessage.length()];
+    copy(replyMessage.begin(), replyMessage.end(), reply);
+    send(clientSocket, reply, sizeof(reply), 0);
 }
