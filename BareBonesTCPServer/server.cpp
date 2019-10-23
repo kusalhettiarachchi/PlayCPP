@@ -10,12 +10,29 @@
 
 using namespace std;
 
-const int PORT = 54000;
-const char* bindIP = "192.168.17.32";
+const int DPORT = 54000;
+char *DIP = "192.168.17.32";
 
 void SendMessage(string msg, int clientSocket);
 
-int main() {
+int main(int argc, char *argv[]) {
+    int PORT;
+    char *IP;
+
+    //We need 2 things: ip address and port number, in that order
+    if(argc == 3)
+    {
+        PORT    = atoi(argv[2]);
+        IP      = argv[1];
+    } else if (argc == 2) {
+        PORT    = atoi(argv[1]);
+        IP      = DIP;
+    } else if(argc == 1) {
+        PORT    = DPORT;
+        IP      = DIP;
+    }
+    cout << "Using " << "IP: " << IP << ", Port: " << PORT << endl;
+
     //Create a socket
     int listeninigSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (listeninigSocket < 0) {
@@ -27,7 +44,7 @@ int main() {
     sockaddr_in hint;
     hint.sin_family = AF_INET;
     hint.sin_port = htons(PORT);
-    inet_pton(AF_INET, bindIP, &hint.sin_addr);
+    inet_pton(AF_INET, IP, &hint.sin_addr);
 
     if (bind(listeninigSocket, (sockaddr*)&hint, sizeof(hint)) == -1) {
         cerr << "Can't bind to IP/port";
