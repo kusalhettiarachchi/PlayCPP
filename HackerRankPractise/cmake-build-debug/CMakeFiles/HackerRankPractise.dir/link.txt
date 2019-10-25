@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/HackerRankPractise.dir/AttParser.cpp.o  -o HackerRankPractise 

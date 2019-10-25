@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/hkusal/CLionProjects/HackerRankPractise/AttParser.cpp
+regex
+-
+cmath
+-
+cstdio
+-
+vector
+-
+iostream
+-
+algorithm
+-
+sstream
+-
+cstring
+-
+
