@@ -2,14 +2,13 @@
 // Created by hkusal on 2019-10-23.
 //
 #include <regex>
-#include <cmath>
-#include <cstdio>
 #include <vector>
 #include <iostream>
-#include <algorithm>
-#include <sstream>
 #include <cstring>
 using namespace std;
+
+const regex startPattern("^(<).+");
+const regex endPattern("^(</).+");
 
 void TokenizeLines(const vector<string>& pHRMLLines, vector<string> &tokens);
 
@@ -71,12 +70,13 @@ void ProcessQuery(const vector<string>& pTokenizedHRML, const string& pQuery) {
 
     // path validating variables
     bool started = false;
+//    stack<string> path;
     vector<char*> path;
     regex pattern("^(tag)([1-9]+)");
 
     // start parsing
     for (auto i = pTokenizedHRML.begin(); i != pTokenizedHRML.end() ; ++i) {
-        if (started && regex_match(i.base()->c_str(), pattern)){
+        if (started && regex_match(i.base()->c_str(), startPattern)){
             path.push_back((char*)i.base()->c_str());
         }
         if (strcmp(i->c_str(), *check.base()) == 0) {
